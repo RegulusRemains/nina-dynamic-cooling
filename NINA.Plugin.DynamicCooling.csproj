@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <RootNamespace>NINA.Plugin.DynamicCooling</RootNamespace>
+    <AssemblyName>NINA.Plugin.DynamicCooling</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Platforms>x64</Platforms>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Page Include="DynamicCoolCameraTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Update="DynamicCoolCameraTemplate.xaml.cs">
+      <DependentUpon>DynamicCoolCameraTemplate.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="NINA.Plugin">
+      <HintPath>..\refs\NINA.Plugin.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="NINA.Core">
+      <HintPath>..\refs\NINA.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="NINA.Sequencer">
+      <HintPath>..\refs\NINA.Sequencer.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="NINA.Equipment">
+      <HintPath>..\refs\NINA.Equipment.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="NINA.Profile">
+      <HintPath>..\refs\NINA.Profile.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="NINA.Astrometry">
+      <HintPath>..\refs\NINA.Astrometry.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="NINA.WPF.Base">
+      <HintPath>..\refs\NINA.WPF.Base.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="NINA.Image">
+      <HintPath>..\refs\NINA.Image.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="CommunityToolkit.Mvvm">
+      <HintPath>..\refs\CommunityToolkit.Mvvm.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\refs\Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ComponentModel.Composition" Version="8.0.0" />
+  </ItemGroup>
+</Project>

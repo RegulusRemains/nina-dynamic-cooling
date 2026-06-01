@@ -1,0 +1,9 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+.guid
+refs/
+release/
+manifest.draft.json
