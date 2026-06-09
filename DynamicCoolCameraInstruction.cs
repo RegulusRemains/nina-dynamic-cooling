@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 namespace NINA.Plugin.DynamicCooling {
 
     [ExportMetadata("Name", "Dynamic Cool Camera")]
-    [ExportMetadata("Description", "Dynamically cool camera based on ambient temperature")]
+    [ExportMetadata("Description", "Set the camera cooling target from ambient temperature. Context-aware: full cool-down at the start of a night, incremental colder steps when re-checked between targets.")]
     [ExportMetadata("Icon", "SnowflakeSVG")]
     [ExportMetadata("Category", "Dynamic Cooling")]
     [Export(typeof(ISequenceItem))]
@@ -43,6 +43,14 @@ namespace NINA.Plugin.DynamicCooling {
 
         [JsonProperty]
         public double Tolerance { get; set; } = 1.0;
+
+        /// <summary>
+        /// When true (default), a between-targets re-check only ever steps the
+        /// setpoint colder — it never warms the camera back up mid-session. Has
+        /// no effect on the initial cool-down.
+        /// </summary>
+        [JsonProperty]
+        public bool OnlyColder { get; set; } = true;
 
         /// <summary>
         /// Live, human-readable temperature sources for the editor dropdown.
@@ -93,7 +101,8 @@ namespace NINA.Plugin.DynamicCooling {
                 MinimumTarget = MinimumTarget,
                 FallbackTarget = FallbackTarget,
                 CoolingDurationMinutes = CoolingDurationMinutes,
-                Tolerance = Tolerance
+                Tolerance = Tolerance,
+                OnlyColder = OnlyColder
             };
         }
 
@@ -103,49 +112,67 @@ namespace NINA.Plugin.DynamicCooling {
             double calculatedTarget;
             if (TemperatureSource == 2) {
                 calculatedTarget = FallbackTarget;
-                Logger.Info($"DynamicCoolCamera: Manual mode, target = {calculatedTarget:F1}°C");
+                Logger.Info($"DynamicCool: Manual mode, target = {calculatedTarget:F1}°C");
             } else if (double.IsNaN(ambient)) {
                 calculatedTarget = FallbackTarget;
-                Logger.Warning($"DynamicCoolCamera: No ambient temperature available, using fallback target {FallbackTarget:F1}°C");
+                Logger.Warning($"DynamicCool: No ambient temperature available, using fallback target {FallbackTarget:F1}°C");
             } else {
                 string source = (TemperatureSource == 0) ? "Weather Device" : "Focuser";
                 double rawTarget = ambient - MaxDelta;
                 double roundedTarget = Math.Ceiling(rawTarget / 5.0) * 5.0;
                 calculatedTarget = Math.Max(roundedTarget, MinimumTarget);
-                Logger.Info($"DynamicCoolCamera: Ambient = {ambient:F1}°C (from {source}), Delta = {MaxDelta:F0}°C, Raw target = {rawTarget:F1}°C, Rounded to 5°C step = {roundedTarget:F0}°C, Final target = {calculatedTarget:F0}°C (min {MinimumTarget:F0}°C)");
+                Logger.Info($"DynamicCool: Ambient = {ambient:F1}°C (from {source}), Delta = {MaxDelta:F0}°C, Raw target = {rawTarget:F1}°C, Rounded to 5°C step = {roundedTarget:F0}°C, Final target = {calculatedTarget:F0}°C (min {MinimumTarget:F0}°C)");
             }
 
             CameraInfo info = cameraMediator.GetInfo();
             if (!info.Connected) {
-                Logger.Error("DynamicCoolCamera: Camera is not connected!");
+                Logger.Error("DynamicCool: Camera is not connected!");
                 throw new SequenceEntityFailedException("Camera is not connected");
             }
 
-            Logger.Info($"DynamicCoolCamera: Current sensor temp = {info.Temperature:F1}°C, setting target to {calculatedTarget:F0}°C, timeout = {CoolingDurationMinutes} min");
+            // Context-aware: if the cooler is off or the sensor is still well above the
+            // target, this is an initial cool-down. Otherwise it's a between-targets
+            // re-check and we only nudge the setpoint.
+            bool coldStart = !info.CoolerOn || (info.Temperature - calculatedTarget >= 3.0);
+
+            if (coldStart) {
+                await ExecuteColdStart(calculatedTarget, info, ambient, progress, token);
+            } else {
+                if (TemperatureSource == 2) {
+                    Logger.Info("DynamicCool: Manual mode and already cooled — nothing to readjust.");
+                    return;
+                }
+                await ExecuteReadjust(calculatedTarget, info, ambient, progress, token);
+            }
+        }
+
+        // Full ramped cool-down from warm/off, with warm-night fallback to a sustainable step.
+        private async Task ExecuteColdStart(double calculatedTarget, CameraInfo info, double ambient, IProgress<ApplicationStatus> progress, CancellationToken token) {
+            Logger.Info($"DynamicCool: Cold start — sensor {info.Temperature:F1}°C, cooling to {calculatedTarget:F0}°C, timeout {CoolingDurationMinutes} min");
             progress?.Report(new ApplicationStatus {
                 Status = $"Dynamic Cooling: {ambient:F0}°C ambient → {calculatedTarget:F0}°C target"
             });
 
             bool reached = await cameraMediator.CoolCamera(calculatedTarget, TimeSpan.FromMinutes(CoolingDurationMinutes), progress, token);
             if (reached) {
-                Logger.Info($"DynamicCoolCamera: Target reached! Sensor at {calculatedTarget:F0}°C");
+                Logger.Info($"DynamicCool: Target reached! Sensor at {calculatedTarget:F0}°C");
                 return;
             }
 
             info = cameraMediator.GetInfo();
             double achieved = info.Temperature;
             double coolerPower = info.CoolerPower;
-            Logger.Warning($"DynamicCoolCamera: Could not reach {calculatedTarget:F0}°C. Achieved = {achieved:F1}°C, Cooler power = {coolerPower:F0}%.");
+            Logger.Warning($"DynamicCool: Could not reach {calculatedTarget:F0}°C. Achieved = {achieved:F1}°C, Cooler power = {coolerPower:F0}%.");
 
             double fallbackStep = calculatedTarget + 5.0;
             if (fallbackStep <= 0.0 && coolerPower >= 80.0) {
-                Logger.Info($"DynamicCoolCamera: Falling back to {fallbackStep:F0}°C (next 5°C step)...");
+                Logger.Info($"DynamicCool: Falling back to {fallbackStep:F0}°C (next 5°C step)...");
                 progress?.Report(new ApplicationStatus {
                     Status = $"Cooling fallback: trying {fallbackStep:F0}°C"
                 });
                 bool fallbackReached = await cameraMediator.CoolCamera(fallbackStep, TimeSpan.FromMinutes(2.0), progress, token);
                 if (fallbackReached) {
-                    Logger.Info($"DynamicCoolCamera: Fallback target reached! Sensor at {fallbackStep:F0}°C");
+                    Logger.Info($"DynamicCool: Fallback target reached! Sensor at {fallbackStep:F0}°C");
                     return;
                 }
             }
@@ -154,9 +181,56 @@ namespace NINA.Plugin.DynamicCooling {
             info = cameraMediator.GetInfo();
             double sensorTemp = info.Temperature;
             double sustainableTarget = Math.Ceiling(sensorTemp / 5.0) * 5.0;
-            Logger.Info($"DynamicCoolCamera: Setting sustainable target to {sustainableTarget:F0}°C (nearest 5°C step above achieved {sensorTemp:F1}°C). TEC will run at reduced power.");
+            Logger.Info($"DynamicCool: Setting sustainable target to {sustainableTarget:F0}°C (nearest 5°C step above achieved {sensorTemp:F1}°C). TEC will run at reduced power.");
             await cameraMediator.CoolCamera(sustainableTarget, TimeSpan.FromSeconds(30.0), progress, token);
-            Logger.Info($"DynamicCoolCamera: Imaging will proceed at {sustainableTarget:F0}°C. Darks should be taken at this temperature.");
+            Logger.Info($"DynamicCool: Imaging will proceed at {sustainableTarget:F0}°C. Darks should be taken at this temperature.");
+        }
+
+        // Between-targets re-check: only step the setpoint when ambient has moved a full 5°C library step.
+        private async Task ExecuteReadjust(double newTarget, CameraInfo info, double ambient, IProgress<ApplicationStatus> progress, CancellationToken token) {
+            double sensorTemp = info.Temperature;
+            double coolerPower = info.CoolerPower;
+            double currentStep = Math.Round(sensorTemp / 5.0) * 5.0;
+            Logger.Info($"DynamicCool: Readjust check — Ambient = {ambient:F1}°C, Sensor = {sensorTemp:F1}°C (step {currentStep:F0}°C), Cooler = {coolerPower:F0}%, New optimal = {newTarget:F0}°C");
+
+            double delta = currentStep - newTarget;
+            if (delta < 5.0 && OnlyColder) {
+                Logger.Info($"DynamicCool: No adjustment needed (current {currentStep:F0}°C, optimal {newTarget:F0}°C, need ≥5°C colder to trigger)");
+                return;
+            }
+            if (delta > -5.0 && delta < 5.0) {
+                Logger.Info($"DynamicCool: No adjustment needed (current {currentStep:F0}°C ≈ optimal {newTarget:F0}°C)");
+                return;
+            }
+            if (delta < -5.0 && OnlyColder) {
+                Logger.Info($"DynamicCool: Ambient warmed — optimal is {newTarget:F0}°C (warmer than current {currentStep:F0}°C), but OnlyColder=true — skipping");
+                return;
+            }
+
+            if (delta > 0.0 && coolerPower >= 90.0) {
+                Logger.Warning($"DynamicCool: TEC at {coolerPower:F0}% — too much load to step colder. Staying at {currentStep:F0}°C");
+                return;
+            }
+
+            string direction = (delta > 0.0) ? "colder" : "warmer";
+            Logger.Info($"DynamicCool: Stepping {direction} from {currentStep:F0}°C → {newTarget:F0}°C (ambient {ambient:F1}°C, delta {MaxDelta:F0}°C)");
+            progress?.Report(new ApplicationStatus {
+                Status = $"Dynamic Cool Readjust: {currentStep:F0}°C → {newTarget:F0}°C"
+            });
+
+            bool reached = await cameraMediator.CoolCamera(newTarget, TimeSpan.FromMinutes(CoolingDurationMinutes), progress, token);
+            if (reached) {
+                Logger.Info($"DynamicCool: New target {newTarget:F0}°C reached!");
+                return;
+            }
+
+            info = cameraMediator.GetInfo();
+            Logger.Warning($"DynamicCool: Could not reach {newTarget:F0}°C (sensor at {info.Temperature:F1}°C, cooler {info.CoolerPower:F0}%). Continuing at current temperature.");
+            double achievable = Math.Ceiling(info.Temperature / 5.0) * 5.0;
+            if (achievable > newTarget) {
+                Logger.Info($"DynamicCool: Resetting to achievable {achievable:F0}°C");
+                await cameraMediator.CoolCamera(achievable, TimeSpan.FromSeconds(30.0), progress, token);
+            }
         }
 
         private double GetAmbientTemperature() {
@@ -170,17 +244,17 @@ namespace NINA.Plugin.DynamicCooling {
                     if (weather.Connected && !double.IsNaN(weather.Temperature)) {
                         return weather.Temperature;
                     }
-                    Logger.Warning("DynamicCoolCamera: Weather device not connected or no temperature data");
+                    Logger.Warning("DynamicCool: Weather device not connected or no temperature data");
                 }
 
                 FocuserInfo focuser = focuserMediator.GetInfo();
                 if (focuser.Connected && !double.IsNaN(focuser.Temperature)) {
                     return focuser.Temperature;
                 }
-                Logger.Warning("DynamicCoolCamera: Focuser not connected or no temperature data");
+                Logger.Warning("DynamicCool: Focuser not connected or no temperature data");
                 return double.NaN;
             } catch (Exception ex) {
-                Logger.Error("DynamicCoolCamera: Error reading temperature: " + ex.Message);
+                Logger.Error("DynamicCool: Error reading temperature: " + ex.Message);
                 return double.NaN;
             }
         }
@@ -192,7 +266,7 @@ namespace NINA.Plugin.DynamicCooling {
                 2 => "Manual",
                 _ => "Unknown",
             };
-            return $"Category: Dynamic Cooling, Item: DynamicCoolCamera, Source: {source}, MaxDelta: {MaxDelta}°C, MinTarget: {MinimumTarget}°C, Timeout: {CoolingDurationMinutes}min";
+            return $"Category: Dynamic Cooling, Item: DynamicCoolCamera, Source: {source}, MaxDelta: {MaxDelta}°C, MinTarget: {MinimumTarget}°C, Timeout: {CoolingDurationMinutes}min, OnlyColder: {OnlyColder}";
         }
     }
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0.0
+- **Merged the two instructions into one.** *Dynamic Cool Readjust* is gone; a single, context-aware **Dynamic Cool Camera** now does both jobs:
+  - At the **start of a night** (cooler off or sensor still warm) it performs a full ramped cool-down with the warm-night fallback.
+  - Placed in **After Each Target** it re-checks ambient and only nudges the setpoint colder as the night cools — never warming, and backing off if the TEC is already maxed.
+- Added an **Only step colder on re-check** option on the instruction (replaces the former Readjust `OnlyColder`).
+- Removed the empty plugin Options page — all parameters live on the instruction; the Plugins-tab Description covers usage.
+- Migration: sequences that used *Dynamic Cool Readjust* should re-point that step to *Dynamic Cool Camera*; saved parameters (delta, min target, timeout, only-colder) carry over unchanged.
+
 ## 1.2.0.0
 - First public release of **Dynamic Cooling**.
 

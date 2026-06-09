@@ -2,29 +2,20 @@
 
 Dynamic camera cooling for [N.I.N.A.](https://nighttime-imaging.eu/) (Nighttime Imaging 'N' Astronomy). Instead of a fixed cooling setpoint, Dynamic Cooling picks the target temperature from a live ambient sensor (weather device, focuser probe, or a manual value), so your sequence cools to a sensible target every night — warm or cold — and never stalls because the TEC can't reach an over-ambitious setpoint.
 
-## Screenshots
+It adds **one** Advanced Sequencer instruction — **Dynamic Cool Camera** — that is *context-aware*: drop it at the start of a night for a full cool-down, and/or in **After Each Target** to track the cooling night. It does the right thing in each spot automatically.
+
+## Screenshot
 
 Pick the temperature source from a dropdown that shows each connected device and its **live reading** — no cryptic numbers:
 
 ![Temperature source dropdown showing live device readings](assets/dropdown.png)
 
-The two instructions appear under the **Dynamic Cooling** category in the Advanced Sequencer's instruction list — drag them in like any other instruction:
+## The instruction
 
-![Dynamic Cooling instructions in the palette](assets/palette.png)
+**Dynamic Cool Camera** lives under the **Dynamic Cooling** category in the Advanced Sequencer's instruction list. Place it wherever you want cooling managed:
 
-Here they are in a real dark-library sequence — **Dynamic Cool Camera** at the start of the night, and **Dynamic Cool Readjust** inside the imaging loop, each with its configurable fields:
-
-![Dynamic Cool instructions configured in a sequence](assets/sequence.png)
-
-## Instructions
-
-The plugin adds two Advanced Sequencer instructions under the **Dynamic Cooling** category:
-
-### Dynamic Cool Camera
-Place at the **start of a night** (a drop-in replacement for the built-in *Cool Camera*).
-- Reads ambient from the selected source and targets `ambient − MaxDelta`, rounded to the nearest 5 °C step and clamped to a configurable minimum.
-- If the TEC can't reach the target on a warm night, it automatically steps back to a sustainable setpoint (nearest 5 °C step above what the cooler actually achieved) so the sequence proceeds instead of hanging on cooling.
-- **Manual** mode pins a fixed fallback target.
+- **Start of a night** (cooler off, or the sensor is still well above target) → it performs a full cool-down: reads ambient and targets `ambient − MaxDelta`, rounded to the nearest 5 °C step and clamped to a configurable minimum. If the TEC can't reach the target on a warm night, it automatically steps back to a sustainable setpoint (nearest 5 °C step above what the cooler actually achieved) so the sequence proceeds instead of hanging on cooling. **Manual** mode pins a fixed fallback target.
+- **After Each Target** (cooler already on and cold) → it re-reads ambient and steps the camera colder as the night cools, snapping to 5 °C library steps. It skips when the TEC is already straining (> 90 % power), and with **Only step colder** on (default) it never steps *warmer* even if ambient rises.
 
 | Setting | Default | Meaning |
 |---------|---------|---------|
@@ -33,12 +24,7 @@ Place at the **start of a night** (a drop-in replacement for the built-in *Cool 
 | Minimum Target | −20 °C | Coldest target allowed |
 | Fallback Target | −10 °C | Used in Manual mode or when no sensor is available |
 | Cooling Duration | 5 min | Cool-down timeout |
-
-### Dynamic Cool Readjust
-Place in **After Each Target**.
-- Re-reads ambient between targets and steps the camera colder as the night cools, snapping to 5 °C library steps.
-- Skips when the TEC is already straining (> 90 % power).
-- `OnlyColder` (default on) means it never steps *warmer* even if ambient rises.
+| Only step colder on re-check | on | When re-checked between targets, only ever step colder — never warm the camera back up mid-session |
 
 ## Why 5 °C steps?
 
