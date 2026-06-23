@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.ComponentModel.Composition;
@@ -38,6 +39,27 @@ namespace NINA.Plugin.DynamicCooling {
 
         public DynamicCoolCameraInstruction() {
             Name = "Dynamic Cool Camera";
+        }
+
+        /// <summary>
+        /// Live one-line summary of the current Plugins ▸ Dynamic Cooling settings,
+        /// shown on the instruction block in the sequencer. Evaluated when the block
+        /// renders, so it reflects whatever is configured on the options page.
+        /// </summary>
+        [JsonIgnore]
+        public string Summary {
+            get {
+                if (profileService == null) { return "Configure in Plugins ▸ Dynamic Cooling"; }
+                var s = DynamicCoolingOptions.CreateAccessor(profileService);
+                double[] steps = DynamicCoolingOptions.GetAllowedSet(s);
+                double delta = s.GetValueDouble(DynamicCoolingOptions.KeyMaxDelta, DynamicCoolingOptions.DefMaxDelta);
+                int src = s.GetValueInt32(DynamicCoolingOptions.KeySource, DynamicCoolingOptions.DefSource);
+                string srcName = (src == 1) ? "Focuser" : "Weather";
+                string temps = (steps.Length > 0)
+                    ? string.Join(", ", steps.Reverse().Select(v => v.ToString("0"))) + " °C"
+                    : "5 °C grid";
+                return $"Cools to: {temps}   ·   Δ{delta:0}°   ·   {srcName}";
+            }
         }
 
         public override object Clone() {

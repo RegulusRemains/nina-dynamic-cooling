@@ -4,6 +4,8 @@ Dynamic camera cooling for [N.I.N.A.](https://nighttime-imaging.eu/) (Nighttime 
 
 It adds **one** Advanced Sequencer instruction — **Dynamic Cool Camera** — that is *context-aware*: drop it at the start of a night for a full cool-down, and/or in **After Each Target** to keep stepping colder as the night cools. It does the right thing in each spot automatically. All configuration lives on the plugin's options page, so the instruction itself needs no setup.
 
+![Dynamic Cooling options page](assets/options.jpg)
+
 ## Setup — Plugins ▸ Dynamic Cooling
 
 Open **Options → Plugins → Dynamic Cooling** and set these once (they apply to every *Dynamic Cool Camera* step, and are stored per profile):

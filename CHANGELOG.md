@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.1.0
+- The **Dynamic Cool Camera** sequencer block now shows a live summary of the active settings — the enabled temperatures, cooling power, and source — instead of a static label.
+- Refreshed the screenshot to the new options page.
+
 ## 1.6.0.0
 - **Simplified the options** down to four settings: **Temperature source**, **Camera cooling power** (max delta below ambient), **Cooling timeout**, and the **Dark library temperatures** grid.
 - Removed the separate **Minimum target** and **Fallback target** settings — the coldest enabled dark-library temperature now defines the cold limit, and when no sensor reading is available the plugin uses the warmest enabled temperature (always reachable).
