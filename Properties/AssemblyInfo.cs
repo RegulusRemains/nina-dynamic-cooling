@@ -15,8 +15,8 @@ using System.Runtime.InteropServices;
 // Unique plugin Identifier.
 [assembly: Guid("25ac9c96-885e-4733-a437-a5d4863a1c7e")]
 
-[assembly: AssemblyVersion("1.3.0.0")]
-[assembly: AssemblyFileVersion("1.3.0.0")]
+[assembly: AssemblyVersion("1.6.0.0")]
+[assembly: AssemblyFileVersion("1.6.0.0")]
 
 // NINA Plugin metadata
 [assembly: AssemblyMetadata("Homepage", "https://github.com/RegulusRemains/nina-dynamic-cooling")]
@@ -29,13 +29,17 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("FeaturedImageURL", "")]
 [assembly: AssemblyMetadata("ScreenshotURL", "")]
 [assembly: AssemblyMetadata("AltScreenshotURL", "")]
-[assembly: AssemblyMetadata("LongDescription", @"Dynamic Cooling dynamically picks the camera cooling target from any connected temperature sensor (weather device, focuser probe, or a manual value), instead of a fixed setpoint. It is a drop-in replacement for the built-in Cool Camera instruction for observatories where ambient temperature varies night to night.
+[assembly: AssemblyMetadata("LongDescription", @"Dynamic Cooling picks the camera's cooling target from the ambient temperature each night, instead of a fixed setpoint. It is a drop-in replacement for the built-in Cool Camera instruction for observatories where the temperature varies night to night.
 
-A single **Dynamic Cool Camera** instruction handles cooling wherever you place it — it is context-aware:
+Set everything once on the Plugins ▸ Dynamic Cooling options page:
 
-- At the **start of a night** (cooler off or sensor still warm) it performs a full ramped cool-down: it targets ambient minus a configurable delta, rounded to the nearest 5°C step and clamped to a minimum target. If the TEC cannot reach the target on a warm night, it steps back to a sustainable setpoint automatically so the sequence never stalls on cooling. Manual mode pins a fixed fallback target.
-- Placed in **After Each Target** it re-checks ambient and steps the camera colder as the night cools, snapping to 5°C library steps. It skips when the TEC is already straining (>90% power) and, with ‘only step colder’ enabled (default), never warms the camera back up mid-session.
+- **Temperature source** — read ambient from the weather device (falls back to the focuser probe) or the focuser probe.
+- **Camera cooling power** — how far below ambient your camera can cool (e.g. 35°C).
+- **Cooling timeout** — how long to wait for the camera to reach the target.
+- **Dark library temperatures** — tick every sensor temperature you keep dark frames for.
 
-All parameters — temperature source, max delta, minimum target, fallback target, cooling timeout, and ‘only step colder’ — are configured on the instruction itself in the sequencer.
+A single **Dynamic Cool Camera** instruction (no per-step options) then cools to the COLDEST ticked temperature the camera can actually reach for the current ambient — so every frame matches a dark library you already have. Drop it at the start of a night for a full cool-down, and in After Each Target to step colder as the night cools (it never warms back up mid-session, and backs off if the cooler is already maxed).
 
+Changelog 1.6.0: simplified the options to just temperature source, cooling power (delta), cooling timeout, and the dark-library temperature grid. Removed the separate fallback and minimum-target settings — the enabled temperatures define the cold limit. Clearer wording and a bordered temperature grid.
+Changelog 1.5.0: moved all configuration to the plugin options page with a 5°C checkbox grid.
 Changelog 1.3.0: merged the former Dynamic Cool Readjust into a single context-aware Dynamic Cool Camera instruction.")]

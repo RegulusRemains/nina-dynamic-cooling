@@ -19,6 +19,13 @@
     <Compile Update="DynamicCoolCameraTemplate.xaml.cs">
       <DependentUpon>DynamicCoolCameraTemplate.xaml</DependentUpon>
     </Compile>
+    <Page Include="DynamicCoolingOptionsTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Update="DynamicCoolingOptionsTemplate.xaml.cs">
+      <DependentUpon>DynamicCoolingOptionsTemplate.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,114 @@
+<ResourceDictionary
+    x:Class="NINA.Plugin.DynamicCooling.DynamicCoolingOptionsTemplate"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:NINA.Plugin.DynamicCooling">
+
+    <!-- Plugins ▸ Dynamic Cooling options page (key = "<plugin manifest Name>_Options"). -->
+    <DataTemplate x:Key="Dynamic Cooling_Options">
+        <StackPanel Orientation="Vertical" Margin="10" DataContext="{Binding}">
+
+            <TextBlock Text="Dynamic Cooling" FontSize="18" FontWeight="Bold"
+                       Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,2"/>
+            <TextBlock Text="Each night, cools the camera to the coldest temperature you have dark frames for that it can actually reach. Set these once — every Dynamic Cool Camera step uses them."
+                       TextWrapping="Wrap" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,14" MaxWidth="620" HorizontalAlignment="Left"/>
+
+            <!-- Temperature source -->
+            <StackPanel Orientation="Horizontal" Margin="0,4">
+                <TextBlock Text="Temperature source:" Width="170" VerticalAlignment="Center"
+                           Foreground="{StaticResource PrimaryBrush}"/>
+                <ComboBox SelectedIndex="{Binding TemperatureSource}" Width="230" HorizontalAlignment="Left">
+                    <ComboBoxItem Content="Weather device (or focuser)"/>
+                    <ComboBoxItem Content="Focuser probe"/>
+                </ComboBox>
+            </StackPanel>
+
+            <!-- Max cooling delta -->
+            <StackPanel Orientation="Horizontal" Margin="0,4">
+                <TextBlock Text="Camera cooling power:" Width="170" VerticalAlignment="Center"
+                           Foreground="{StaticResource PrimaryBrush}"/>
+                <TextBox Text="{Binding MaxDelta}" Width="70" VerticalAlignment="Center"/>
+                <TextBlock Text="°C below ambient" VerticalAlignment="Center" Margin="8,0,0,0"
+                           Foreground="{StaticResource PrimaryBrush}"/>
+            </StackPanel>
+
+            <!-- Cooling timeout -->
+            <StackPanel Orientation="Horizontal" Margin="0,4">
+                <TextBlock Text="Cooling timeout:" Width="170" VerticalAlignment="Center"
+                           Foreground="{StaticResource PrimaryBrush}"/>
+                <TextBox Text="{Binding CoolingDurationMinutes}" Width="70" VerticalAlignment="Center"/>
+                <TextBlock Text="minutes" VerticalAlignment="Center" Margin="8,0,0,0"
+                           Foreground="{StaticResource PrimaryBrush}"/>
+            </StackPanel>
+
+            <!-- Dark library temperatures -->
+            <TextBlock Text="Dark library temperatures" FontWeight="Bold" Margin="0,16,0,2"
+                       Foreground="{StaticResource PrimaryBrush}"/>
+            <TextBlock Text="Tick every temperature you have darks for. The plugin cools to the coldest ticked temperature it can reach on the night."
+                       TextWrapping="Wrap" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,8" MaxWidth="620" HorizontalAlignment="Left"/>
+            <WrapPanel Orientation="Horizontal" MaxWidth="700" HorizontalAlignment="Left">
+                <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" CornerRadius="3" Padding="6,3" Margin="0,4,10,4">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Use_p5}" VerticalAlignment="Center"/>
+                        <TextBlock Text="+5 °C" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"/>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" CornerRadius="3" Padding="6,3" Margin="0,4,10,4">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Use_0}" VerticalAlignment="Center"/>
+                        <TextBlock Text="0 °C" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"/>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" CornerRadius="3" Padding="6,3" Margin="0,4,10,4">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Use_m5}" VerticalAlignment="Center"/>
+                        <TextBlock Text="-5 °C" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"/>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" CornerRadius="3" Padding="6,3" Margin="0,4,10,4">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Use_m10}" VerticalAlignment="Center"/>
+                        <TextBlock Text="-10 °C" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"/>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" CornerRadius="3" Padding="6,3" Margin="0,4,10,4">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Use_m15}" VerticalAlignment="Center"/>
+                        <TextBlock Text="-15 °C" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"/>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" CornerRadius="3" Padding="6,3" Margin="0,4,10,4">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Use_m20}" VerticalAlignment="Center"/>
+                        <TextBlock Text="-20 °C" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"/>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" CornerRadius="3" Padding="6,3" Margin="0,4,10,4">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Use_m25}" VerticalAlignment="Center"/>
+                        <TextBlock Text="-25 °C" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"/>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" CornerRadius="3" Padding="6,3" Margin="0,4,10,4">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Use_m30}" VerticalAlignment="Center"/>
+                        <TextBlock Text="-30 °C" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"/>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" CornerRadius="3" Padding="6,3" Margin="0,4,10,4">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Use_m35}" VerticalAlignment="Center"/>
+                        <TextBlock Text="-35 °C" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"/>
+                    </StackPanel>
+                </Border>
+                <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" CornerRadius="3" Padding="6,3" Margin="0,4,10,4">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Use_m40}" VerticalAlignment="Center"/>
+                        <TextBlock Text="-40 °C" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"/>
+                    </StackPanel>
+                </Border>
+            </WrapPanel>
+
+        </StackPanel>
+    </DataTemplate>
+</ResourceDictionary>
