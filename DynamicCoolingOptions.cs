@@ -33,6 +33,26 @@ namespace NINA.Plugin.DynamicCooling {
         internal const double DefMaxDelta = 35.0;
         internal const int DefTimeout = 5;
 
+        // ── Dew heater setting keys + defaults ────────────────────────────────
+        internal const string KeyDewEnabled = "DewHeaterEnabled";
+        internal const string KeyDewMargin = "DewPointMargin";
+
+        internal const bool DefDewEnabled = true;
+        internal const double DefDewMargin = 3.0;   // °C: turn heater on when ambient gets within this of the dew point
+        internal const double DewHysteresis = 2.0;  // °C dead-band added before the heater turns back off
+
+        /// <summary>
+        /// Dew point (°C) from air temperature and relative humidity via the
+        /// Magnus-Tetens approximation. Used only when the weather device doesn't
+        /// report a dew point directly. Returns NaN for non-physical humidity.
+        /// </summary>
+        internal static double DewPointFrom(double tempC, double rhPercent) {
+            if (rhPercent <= 0.0) { return double.NaN; }
+            const double a = 17.62, b = 243.12;
+            double gamma = Math.Log(rhPercent / 100.0) + (a * tempC) / (b + tempC);
+            return (b * gamma) / (a - gamma);
+        }
+
         /// <summary>The fixed 5°C grid (warmest → coldest): key, temperature, default-enabled.</summary>
         internal static readonly (string Key, double Temp, bool Default)[] Grid = {
             ("Use_p5",   5.0, false),

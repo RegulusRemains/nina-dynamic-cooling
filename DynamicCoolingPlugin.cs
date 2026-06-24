@@ -49,6 +49,17 @@ namespace NINA.Plugin.DynamicCooling {
             set { settings.SetValueInt32(DynamicCoolingOptions.KeyTimeout, value); RaisePropertyChanged(); }
         }
 
+        // ── Dew heater settings ───────────────────────────────────────────────
+        public bool DewHeaterEnabled {
+            get => settings.GetValueBoolean(DynamicCoolingOptions.KeyDewEnabled, DynamicCoolingOptions.DefDewEnabled);
+            set { settings.SetValueBoolean(DynamicCoolingOptions.KeyDewEnabled, value); RaisePropertyChanged(); }
+        }
+
+        public double DewPointMargin {
+            get => settings.GetValueDouble(DynamicCoolingOptions.KeyDewMargin, DynamicCoolingOptions.DefDewMargin);
+            set { settings.SetValueDouble(DynamicCoolingOptions.KeyDewMargin, value); RaisePropertyChanged(); }
+        }
+
         // ── Temperature grid (5°C steps) — each bound to a checkbox ────────────
         private bool GridGet(string key) => settings.GetValueBoolean(key, DynamicCoolingOptions.DefaultFor(key));
         private void GridSet(string key, bool value, string prop) {

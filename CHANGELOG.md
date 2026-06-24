@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.0.0
+- Added a **Dew Heater Control** trigger. Drop it in your sequence and it turns the camera's anti-dew heater **on** when the ambient air gets close to the dew point and **off** again once the air dries out — with a small hysteresis band so it doesn't flap.
+- New options on the Plugins ▸ Dynamic Cooling page: a master **Manage the camera's dew heater automatically** toggle and a **Turn on within … °C of the dew point** margin (default 3 °C).
+- Dew control reads the dew point from a connected weather device (it computes it from temperature + humidity if the device doesn't report one directly).
+
 ## 1.6.1.0
 - The **Dynamic Cool Camera** sequencer block now shows a live summary of the active settings — the enabled temperatures, cooling power, and source — instead of a static label.
 - Refreshed the screenshot to the new options page.

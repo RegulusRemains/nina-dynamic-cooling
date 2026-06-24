@@ -15,8 +15,8 @@ using System.Runtime.InteropServices;
 // Unique plugin Identifier.
 [assembly: Guid("25ac9c96-885e-4733-a437-a5d4863a1c7e")]
 
-[assembly: AssemblyVersion("1.6.1.0")]
-[assembly: AssemblyFileVersion("1.6.1.0")]
+[assembly: AssemblyVersion("1.7.0.0")]
+[assembly: AssemblyFileVersion("1.7.0.0")]
 
 // NINA Plugin metadata
 [assembly: AssemblyMetadata("Homepage", "https://github.com/RegulusRemains/nina-dynamic-cooling")]
@@ -40,6 +40,9 @@ Set everything once on the Plugins ▸ Dynamic Cooling options page:
 
 A single **Dynamic Cool Camera** instruction (no per-step options) then cools to the COLDEST ticked temperature the camera can actually reach for the current ambient — so every frame matches a dark library you already have. Drop it at the start of a night for a full cool-down, and in After Each Target to step colder as the night cools (it never warms back up mid-session, and backs off if the cooler is already maxed).
 
+It also adds a **Dew Heater Control** trigger: drop it in your sequence and it turns the camera's anti-dew heater on when the air gets close to the dew point and off again once it dries out (with a small hysteresis so it doesn't flap). Dew control needs a connected weather device for humidity / dew point.
+
+Changelog 1.7.0: added the Dew Heater Control trigger — automatic camera dew-heater management based on how close the ambient temperature is to the dew point. Configurable margin on the options page.
 Changelog 1.6.0: simplified the options to just temperature source, cooling power (delta), cooling timeout, and the dark-library temperature grid. Removed the separate fallback and minimum-target settings — the enabled temperatures define the cold limit. Clearer wording and a bordered temperature grid.
 Changelog 1.5.0: moved all configuration to the plugin options page with a 5°C checkbox grid.
 Changelog 1.3.0: merged the former Dynamic Cool Readjust into a single context-aware Dynamic Cool Camera instruction.")]
