@@ -65,3 +65,13 @@ Output: `bin\x64\Release\NINA.Plugin.DynamicCooling.dll`.
 ## License
 
 [MPL-2.0](LICENSE).
+
+## Tests
+
+Unit tests for the sequencer logic live in `Tests/` (NUnit + Moq). They run against the
+real NINA assemblies supplied in `..\refs` (the same set the plugin builds against), on a
+Windows machine with the .NET 8 SDK:
+
+```
+dotnet test Tests
+```
