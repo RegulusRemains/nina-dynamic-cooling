@@ -81,4 +81,8 @@
   <ItemGroup>
     <PackageReference Include="System.ComponentModel.Composition" Version="8.0.0" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Tests has its own project; keep its sources out of the plugin assembly -->
+    <Compile Remove="Tests\**\*.cs" />
+  </ItemGroup>
 </Project>
