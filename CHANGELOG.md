@@ -1,7 +1,12 @@
 # Changelog
 
+## 1.7.1.0
+- The Dew Heater Control margin now defaults to 5 °C instead of 3 °C. The camera's front window runs colder than the surrounding air on clear nights, so leading the dew point by a few degrees switches the heater on before the glass itself reaches the dew point.
+- Documented that the dew heater is only reachable when the camera is connected with its native driver, not ASCOM. If the camera's ASCOM settings have their own anti-dew option, turn it off so it does not fight the trigger.
+- Rewrote the plugin description and README.
+
 ## 1.7.0.0
-- Added a **Dew Heater Control** trigger. Drop it in your sequence and it turns the camera's anti-dew heater **on** when the ambient air gets close to the dew point and **off** again once the air dries out — with a small hysteresis band so it doesn't flap.
+- Added a **Dew Heater Control** trigger. Drop it in your sequence and it turns the camera's anti-dew heater **on** when the ambient air gets close to the dew point and **off** again once the air dries out, with a small hysteresis band so it doesn't flap.
 - New options on the Plugins ▸ Dynamic Cooling page: a master **Manage the camera's dew heater automatically** toggle and a **Turn on within … °C of the dew point** margin (default 3 °C).
 - Dew control reads the dew point from a connected weather device (it computes it from temperature + humidity if the device doesn't report one directly).
 
@@ -11,7 +16,7 @@
 
 ## 1.6.0.0
 - **Simplified the options** down to four settings: **Temperature source**, **Camera cooling power** (max delta below ambient), **Cooling timeout**, and the **Dark library temperatures** grid.
-- Removed the separate **Minimum target** and **Fallback target** settings — the coldest enabled dark-library temperature now defines the cold limit, and when no sensor reading is available the plugin uses the warmest enabled temperature (always reachable).
+- Removed the separate **Minimum target** and **Fallback target** settings. The coldest enabled dark-library temperature now defines the cold limit, and when no sensor reading is available the plugin uses the warmest enabled temperature (always reachable).
 - Removed the **Only step colder** toggle from the UI; between-target re-checks always step colder and never warm the camera back up.
 - Clearer wording throughout, and each temperature toggle is boxed with its label so the pairing is unambiguous.
 

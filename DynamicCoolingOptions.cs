@@ -38,7 +38,7 @@ namespace NINA.Plugin.DynamicCooling {
         internal const string KeyDewMargin = "DewPointMargin";
 
         internal const bool DefDewEnabled = true;
-        internal const double DefDewMargin = 3.0;   // °C: turn heater on when ambient gets within this of the dew point
+        internal const double DefDewMargin = 5.0;   // °C: turn heater on when ambient gets within this of the dew point
         internal const double DewHysteresis = 2.0;  // °C dead-band added before the heater turns back off
 
         /// <summary>

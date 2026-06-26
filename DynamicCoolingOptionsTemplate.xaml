@@ -10,7 +10,7 @@
 
             <TextBlock Text="Dynamic Cooling" FontSize="18" FontWeight="Bold"
                        Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,2"/>
-            <TextBlock Text="Each night, cools the camera to the coldest temperature you have dark frames for that it can actually reach. Set these once — every Dynamic Cool Camera step uses them."
+            <TextBlock Text="Each night, cools the camera to the coldest temperature you have dark frames for that it can actually reach. Set these once. Every Dynamic Cool Camera step uses them."
                        TextWrapping="Wrap" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,14" MaxWidth="620" HorizontalAlignment="Left"/>
 
             <!-- Temperature source -->
@@ -124,7 +124,7 @@
                 <TextBlock Text="°C of the dew point" VerticalAlignment="Center" Margin="8,0,0,0"
                            Foreground="{StaticResource PrimaryBrush}"/>
             </StackPanel>
-            <TextBlock Text="Add a Dew Heater Control trigger to your sequence to use this. It needs a connected weather device (for humidity / dew point), and turns the heater back off once the air dries out."
+            <TextBlock Text="Add a Dew Heater Control trigger to your sequence to use this. It needs a connected weather device (for humidity and dew point), and turns the heater back off once the air dries out. The camera must be connected with its native driver, not ASCOM, for NINA to reach the heater. If the camera's ASCOM settings have their own anti-dew option, turn it off so the two do not fight."
                        TextWrapping="Wrap" Foreground="{StaticResource PrimaryBrush}" Margin="0,2,0,0" MaxWidth="620" HorizontalAlignment="Left"/>
 
         </StackPanel>

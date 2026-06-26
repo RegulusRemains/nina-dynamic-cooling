@@ -25,7 +25,7 @@ namespace NINA.Plugin.DynamicCooling {
     /// Dew point comes from a connected weather device (humidity is required).
     /// </summary>
     [ExportMetadata("Name", "Dew Heater Control")]
-    [ExportMetadata("Description", "Turns the camera's dew heater on when the air gets close to the dew point and off again once it dries out. Configured in Plugins ▸ Dynamic Cooling. Needs a connected weather device.")]
+    [ExportMetadata("Description", "Turns the camera's dew heater on when the air gets close to the dew point and off again once it dries out. Configured in Plugins ▸ Dynamic Cooling. Needs a connected weather device and a camera connected with its native driver, not ASCOM.")]
     [ExportMetadata("Icon", "SnowflakeSVG")]
     [ExportMetadata("Category", "Dynamic Cooling")]
     [Export(typeof(ISequenceTrigger))]

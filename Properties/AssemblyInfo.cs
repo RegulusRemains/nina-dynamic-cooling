@@ -15,8 +15,8 @@ using System.Runtime.InteropServices;
 // Unique plugin Identifier.
 [assembly: Guid("25ac9c96-885e-4733-a437-a5d4863a1c7e")]
 
-[assembly: AssemblyVersion("1.7.0.0")]
-[assembly: AssemblyFileVersion("1.7.0.0")]
+[assembly: AssemblyVersion("1.7.1.0")]
+[assembly: AssemblyFileVersion("1.7.1.0")]
 
 // NINA Plugin metadata
 [assembly: AssemblyMetadata("Homepage", "https://github.com/RegulusRemains/nina-dynamic-cooling")]
@@ -29,20 +29,21 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("FeaturedImageURL", "")]
 [assembly: AssemblyMetadata("ScreenshotURL", "")]
 [assembly: AssemblyMetadata("AltScreenshotURL", "")]
-[assembly: AssemblyMetadata("LongDescription", @"Dynamic Cooling picks the camera's cooling target from the ambient temperature each night, instead of a fixed setpoint. It is a drop-in replacement for the built-in Cool Camera instruction for observatories where the temperature varies night to night.
+[assembly: AssemblyMetadata("LongDescription", @"Dynamic Cooling sets the camera's cooling target from the ambient temperature each night instead of using a fixed setpoint. It is meant for observatories where the temperature changes enough from night to night that one fixed setpoint either wastes cooling headroom or stalls the sequence when the cooler cannot reach it.
 
-Set everything once on the Plugins ▸ Dynamic Cooling options page:
+You set everything once on the Plugins ▸ Dynamic Cooling options page:
 
-- **Temperature source** — read ambient from the weather device (falls back to the focuser probe) or the focuser probe.
-- **Camera cooling power** — how far below ambient your camera can cool (e.g. 35°C).
-- **Cooling timeout** — how long to wait for the camera to reach the target.
-- **Dark library temperatures** — tick every sensor temperature you keep dark frames for.
+Temperature source: read ambient from the weather device (with the focuser probe as a fallback), or from the focuser probe only.
+Camera cooling power: how far below ambient your camera can hold, for example 35°C.
+Cooling timeout: how long to wait for the camera to reach the target.
+Dark library temperatures: tick the sensor temperatures you keep dark frames for.
 
-A single **Dynamic Cool Camera** instruction (no per-step options) then cools to the COLDEST ticked temperature the camera can actually reach for the current ambient — so every frame matches a dark library you already have. Drop it at the start of a night for a full cool-down, and in After Each Target to step colder as the night cools (it never warms back up mid-session, and backs off if the cooler is already maxed).
+Add one Dynamic Cool Camera instruction to your sequence. It has no per-step settings. It cools to the coldest ticked temperature the camera can reach for the current ambient, so every light frame matches a dark you already have. Put it at the start of the night for the first cool-down, and in After Each Target to step colder as the night cools. It will not warm the camera back up during a session, and it backs off if the cooler is already maxed out.
 
-It also adds a **Dew Heater Control** trigger: drop it in your sequence and it turns the camera's anti-dew heater on when the air gets close to the dew point and off again once it dries out (with a small hysteresis so it doesn't flap). Dew control needs a connected weather device for humidity / dew point.
+The plugin also adds a Dew Heater Control trigger. Drop it into your sequence and it turns the camera's anti-dew heater on when the air gets close to the dew point, then off again once the air dries out. A small hysteresis band keeps it from switching back and forth. It needs a connected weather device for humidity and dew point. NINA can only reach the heater when the camera is connected with its native driver rather than ASCOM, so use the native driver and turn off any anti-dew option in the camera's ASCOM settings.
 
-Changelog 1.7.0: added the Dew Heater Control trigger — automatic camera dew-heater management based on how close the ambient temperature is to the dew point. Configurable margin on the options page.
-Changelog 1.6.0: simplified the options to just temperature source, cooling power (delta), cooling timeout, and the dark-library temperature grid. Removed the separate fallback and minimum-target settings — the enabled temperatures define the cold limit. Clearer wording and a bordered temperature grid.
+Changelog 1.7.1: the dew heater margin now defaults to 5°C, and the plugin description was rewritten.
+Changelog 1.7.0: added the Dew Heater Control trigger for automatic anti-dew heater management based on how close the ambient temperature is to the dew point.
+Changelog 1.6.0: simplified the options to temperature source, cooling power, cooling timeout, and the dark library grid. The enabled temperatures now define the cold limit.
 Changelog 1.5.0: moved all configuration to the plugin options page with a 5°C checkbox grid.
-Changelog 1.3.0: merged the former Dynamic Cool Readjust into a single context-aware Dynamic Cool Camera instruction.")]
+Changelog 1.3.0: merged Dynamic Cool Readjust into the single Dynamic Cool Camera instruction.")]

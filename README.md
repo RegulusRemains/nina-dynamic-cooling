@@ -1,12 +1,12 @@
-# Dynamic Cooling — N.I.N.A. Plugin
+# Dynamic Cooling for N.I.N.A.
 
-Dynamic camera cooling for [N.I.N.A.](https://nighttime-imaging.eu/) (Nighttime Imaging 'N' Astronomy). Instead of a fixed cooling setpoint, Dynamic Cooling derives the target from the ambient temperature each night and snaps it onto a temperature you actually keep dark frames for — so your lights always match a dark library, and the sequence never stalls because the TEC can't reach an over-ambitious setpoint.
+Dynamic camera cooling for [N.I.N.A.](https://nighttime-imaging.eu/) (Nighttime Imaging 'N' Astronomy). Instead of a fixed cooling setpoint, Dynamic Cooling sets the target from the ambient temperature each night and snaps it to a temperature you actually keep dark frames for. Your lights always match a dark library, and the sequence does not stall because the cooler cannot reach an over-ambitious setpoint.
 
-It adds an Advanced Sequencer instruction — **Dynamic Cool Camera** — that is *context-aware*: drop it at the start of a night for a full cool-down, and/or in **After Each Target** to keep stepping colder as the night cools. It does the right thing in each spot automatically. It also adds a **Dew Heater Control** trigger that manages the camera's anti-dew heater based on how close the air is to the dew point. All configuration lives on the plugin's options page, so the sequencer items themselves need no setup.
+It adds an Advanced Sequencer instruction, **Dynamic Cool Camera**. Place it at the start of a night for a full cool-down, and in **After Each Target** to keep stepping colder as the night cools; it adjusts what it does based on where you place it. It also adds a **Dew Heater Control** trigger that manages the camera's anti-dew heater based on how close the air is to the dew point. All configuration lives on the plugin's options page, so the sequencer items themselves need no setup.
 
 ![Dynamic Cooling options page](assets/options.jpg)
 
-## Setup — Plugins ▸ Dynamic Cooling
+## Setup: Plugins ▸ Dynamic Cooling
 
 Open **Options → Plugins → Dynamic Cooling** and set these once (they apply to every *Dynamic Cool Camera* step, and are stored per profile):
 
@@ -17,7 +17,7 @@ Open **Options → Plugins → Dynamic Cooling** and set these once (they apply 
 | **Cooling timeout** | 5 min | How long to wait for the camera to reach the target before the sequence continues. |
 | **Dark library temperatures** | 0, −5, −10, −15, −20 °C | Tick every sensor temperature you keep dark frames for (a 5 °C grid from +5 down to −40 °C). The plugin only ever cools to one of these. |
 | **Manage the dew heater** | On | Let the plugin switch the camera's anti-dew heater on/off automatically (requires the *Dew Heater Control* trigger in your sequence). |
-| **Turn on within … °C of dew point** | 3 °C | How close the ambient air has to get to the dew point before the heater comes on. It switches off again once the air dries past this margin (plus a small hysteresis band). |
+| **Turn on within … °C of dew point** | 5 °C | How close the ambient air has to get to the dew point before the heater comes on. It switches off again once the air dries past this margin (plus a small hysteresis band). The 5 °C default leads the dew point a little, because the front glass runs colder than the surrounding air on clear nights. |
 
 ## How it works
 
@@ -35,15 +35,17 @@ Add the **Dew Heater Control** trigger (under the **Dynamic Cooling** category i
 - When the gap closes to within your margin (humid air → condensation risk on the camera's front window), it turns the camera's anti-dew heater **on**.
 - Once the air dries out and the gap climbs back past the margin (plus a small hysteresis band so it doesn't flap), it turns the heater **off** again.
 
-Dew control needs a **connected weather device** — that's where humidity / dew point comes from. The trigger uses the device's reported dew point, or computes it from temperature and humidity if the device doesn't provide one. If your camera has no dew heater, the trigger simply does nothing.
+Dew control needs a **connected weather device** for humidity and dew point. The trigger uses the device's reported dew point, or computes it from temperature and humidity if the device does not provide one. If your camera has no dew heater, the trigger does nothing.
+
+**Camera driver matters.** NINA can only switch the dew heater when the camera is connected with its **native driver** (for example the ZWO ASI driver), not through ASCOM. The ASCOM camera interface has no dew-heater control, so on an ASCOM connection the trigger has nothing to switch and does nothing. Connect with the native driver, and if your camera's ASCOM settings have their own anti-dew option, turn it off so it does not fight the trigger.
 
 ## Why dark-library temperatures?
 
-Only cooling to temperatures you already have darks for keeps every light frame calibratable — no surprise setpoints, no rebuilding your dark library because a warm night forced an odd temperature. Tick the steps you maintain (commonly 0, −5, −10, −15, −20 °C) and the plugin always lands on one of them.
+Only cooling to temperatures you already have darks for keeps every light frame calibratable. No surprise setpoints, and no rebuilding your dark library because a warm night forced an odd temperature. Tick the steps you maintain (commonly 0, -5, -10, -15, -20 °C) and the plugin always lands on one of them.
 
 ## Installation
 
-No compiling required — a prebuilt DLL is provided with every release.
+No compiling required. A prebuilt DLL is provided with every release.
 
 **From inside N.I.N.A.** (once it's in the plugin catalogue): *Options → Plugins → Available*, find **Dynamic Cooling**, and click install.
 
