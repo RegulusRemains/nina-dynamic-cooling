@@ -30,7 +30,7 @@ namespace NINA.Plugin.DynamicCooling {
         internal const string KeyTimeout = "CoolingDurationMinutes";
 
         internal const int DefSource = 0;          // 0 = Weather (or focuser), 1 = Focuser
-        internal const double DefMaxDelta = 35.0;
+        internal const double DefMaxDelta = 30.0;  // °C below ambient a typical cooled CMOS TEC sustains
         internal const int DefTimeout = 5;
 
         /// <summary>The fixed 5°C grid (warmest → coldest): key, temperature, default-enabled.</summary>
