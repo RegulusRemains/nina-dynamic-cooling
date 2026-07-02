@@ -30,7 +30,12 @@ If no temperature reading is available at all, it falls back to the **warmest en
 
 Versions 1.7.x shipped a **Dew Heater Control** trigger that switched the camera's anti-dew window heater based on the ambient − dew point spread. **It was removed in 1.8.0** because it modeled the wrong surface: the window sits on a chamber cooled 20–35 °C below ambient, so its temperature tracks the *sensor*, not the air. The window can be below the dew point while the ambient spread still looks safe (a false OFF on dry nights), and on humid nights the spread test kept the heater on permanently anyway — the ambient model was either wrong or redundant. As a trigger it also stopped evaluating the moment the sequence ended, stranding the heater in its last state (issues [#3](https://github.com/RegulusRemains/nina-dynamic-cooling/issues/3), [#4](https://github.com/RegulusRemains/nina-dynamic-cooling/issues/4)).
 
-**Do this instead:** connect the camera with its **native driver** (e.g. the ZWO ASI driver — the ASCOM camera interface has no dew-heater control) and enable NINA's own dew-heater camera setting, or use your vendor driver's anti-dew option. In short: leave the window heater on whenever the sensor is cooled. That is the physically correct policy, costs a couple of watts, and needs no automation.
+**Do this instead — in order of preference:**
+
+1. **Camera firmware "anti-dew cooler linkage"** (ZWO cameras, in the driver/firmware settings): the heater follows the TEC — on whenever the sensor is cooling, off when it stops. This is the on-while-cooling policy enforced inside the camera itself: it survives software crashes and unsafe shutdowns, self-cancels at warm-up, and cannot be stranded on. Note that once linkage is enabled the camera revokes external control of the heater — the SDK stops reporting the anti-dew control as writable, so NINA's dew-heater toggle disappears from the camera panel (`HasDewHeater` goes false). That is by design: one authority. It also means any software heater control — including the removed 1.7.x trigger — would silently no-op with linkage on.
+2. **NINA's own dew-heater camera setting** (native driver only — the ASCOM camera interface has no dew-heater member): applied at connect, effectively always-on while connected. Use this if your camera has no cooler linkage.
+
+Either way the principle is the same: leave the window heater on whenever the sensor is cooled. It is the physically correct policy, costs a couple of watts, and needs no automation.
 
 ## Why dark-library temperatures?
 
