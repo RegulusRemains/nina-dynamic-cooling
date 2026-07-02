@@ -109,24 +109,6 @@
                 </Border>
             </WrapPanel>
 
-            <!-- Dew heater -->
-            <TextBlock Text="Dew heater" FontWeight="Bold" Margin="0,18,0,2"
-                       Foreground="{StaticResource PrimaryBrush}"/>
-            <StackPanel Orientation="Horizontal" Margin="0,2">
-                <CheckBox IsChecked="{Binding DewHeaterEnabled}" VerticalAlignment="Center"/>
-                <TextBlock Text="Manage the camera's dew heater automatically" Margin="8,0,0,0"
-                           VerticalAlignment="Center" Foreground="{StaticResource PrimaryBrush}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,4">
-                <TextBlock Text="Turn on within:" Width="170" VerticalAlignment="Center"
-                           Foreground="{StaticResource PrimaryBrush}"/>
-                <TextBox Text="{Binding DewPointMargin}" Width="70" VerticalAlignment="Center"/>
-                <TextBlock Text="°C of the dew point" VerticalAlignment="Center" Margin="8,0,0,0"
-                           Foreground="{StaticResource PrimaryBrush}"/>
-            </StackPanel>
-            <TextBlock Text="Add a Dew Heater Control trigger to your sequence to use this. It needs a connected weather device (for humidity and dew point), and turns the heater back off once the air dries out. The camera must be connected with its native driver, not ASCOM, for NINA to reach the heater. If the camera's ASCOM settings have their own anti-dew option, turn it off so the two do not fight."
-                       TextWrapping="Wrap" Foreground="{StaticResource PrimaryBrush}" Margin="0,2,0,0" MaxWidth="620" HorizontalAlignment="Left"/>
-
         </StackPanel>
     </DataTemplate>
 </ResourceDictionary>
