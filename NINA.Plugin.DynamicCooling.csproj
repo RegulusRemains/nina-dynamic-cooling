@@ -26,13 +26,6 @@
     <Compile Update="DynamicCoolingOptionsTemplate.xaml.cs">
       <DependentUpon>DynamicCoolingOptionsTemplate.xaml</DependentUpon>
     </Compile>
-    <Page Include="DewHeaterTriggerTemplate.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Update="DewHeaterTriggerTemplate.xaml.cs">
-      <DependentUpon>DewHeaterTriggerTemplate.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>

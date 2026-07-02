@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.0.0
+- **Removed the Dew Heater Control trigger and its options** (the master toggle and dew-point margin on the options page).
+- Why: the trigger switched the heater on the *ambient* − dew point spread, but the surface at risk is the camera window, which fronts a chamber cooled 20–35 °C below ambient. The window can be under the dew point while the ambient spread still looks bone dry (false OFF on dry nights), and on humid nights the spread test is permanently ON anyway — so the model was either wrong or redundant. It also stranded the heater ON after the sequence ended, since triggers stop evaluating at sequence exit and nothing in a shutdown path switches it off (#3, #4).
+- What to do instead: prefer the camera firmware's **anti-dew cooler linkage** (ZWO): heater on whenever the TEC cools, enforced inside the camera — it survives crashes, self-cancels at warm-up, and revokes external heater control (`HasDewHeater` reports non-writable, so NINA's toggle disappears; any software control, including the removed trigger, would silently no-op). Without linkage, use NINA's own dew-heater camera setting on the **native driver** (applied at connect). Either way: window heater on whenever the sensor is cooled — physically correct, no plugin needed.
+- Migration: sequences containing the old *Dew Heater Control* trigger will simply drop it on load. Remove it from saved sequence JSONs/templates to silence any load warnings. The stored `DewHeaterEnabled` / `DewPointMargin` profile settings are ignored and can be left in place.
+
 ## 1.7.1.0
 - The Dew Heater Control margin now defaults to 5 °C instead of 3 °C. The camera's front window runs colder than the surrounding air on clear nights, so leading the dew point by a few degrees switches the heater on before the glass itself reaches the dew point.
 - Documented that the dew heater is only reachable when the camera is connected with its native driver, not ASCOM. If the camera's ASCOM settings have their own anti-dew option, turn it off so it does not fight the trigger.
