@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.1.0
+- **Camera cooling power now defaults to 30 °C below ambient** (was 35 °C). Spec sheets quote 35 °C deltas, but in the field most cooled CMOS cameras sustain about 30 °C — an over-ambitious default makes a new user's first night chase an unreachable setpoint, which is exactly the stall this plugin exists to prevent. Existing profiles keep whatever value they have stored; the new default only applies where none was saved.
+
 ## 1.8.0.0
 - **Removed the Dew Heater Control trigger and its options** (the master toggle and dew-point margin on the options page).
 - Why: the trigger switched the heater on the *ambient* − dew point spread, but the surface at risk is the camera window, which fronts a chamber cooled 20–35 °C below ambient. The window can be under the dew point while the ambient spread still looks bone dry (false OFF on dry nights), and on humid nights the spread test is permanently ON anyway — so the model was either wrong or redundant. It also stranded the heater ON after the sequence ended, since triggers stop evaluating at sequence exit and nothing in a shutdown path switches it off (#3, #4).

@@ -13,7 +13,7 @@ Open **Options → Plugins → Dynamic Cooling** and set these once (they apply 
 | Setting | Default | Meaning |
 |---------|---------|---------|
 | **Temperature source** | Weather device | Where to read ambient temperature. *Weather device (or focuser)* uses the weather device and falls back to the focuser's probe if it's unavailable; *Focuser probe* uses the focuser only. |
-| **Camera cooling power** | 35 °C | How far below ambient your camera's cooler can pull. ASI6200-class cameras manage about 35 °C. |
+| **Camera cooling power** | 30 °C | How far below ambient your camera's cooler can pull. Most cooled CMOS cameras sustain about 30 °C in the field; raise it only if yours reliably holds more. |
 | **Cooling timeout** | 5 min | How long to wait for the camera to reach the target before the sequence continues. |
 | **Dark library temperatures** | 0, −5, −10, −15, −20 °C | Tick every sensor temperature you keep dark frames for (a 5 °C grid from +5 down to −40 °C). The plugin only ever cools to one of these. |
 

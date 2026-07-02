@@ -15,8 +15,8 @@ using System.Runtime.InteropServices;
 // Unique plugin Identifier.
 [assembly: Guid("25ac9c96-885e-4733-a437-a5d4863a1c7e")]
 
-[assembly: AssemblyVersion("1.8.0.0")]
-[assembly: AssemblyFileVersion("1.8.0.0")]
+[assembly: AssemblyVersion("1.8.1.0")]
+[assembly: AssemblyFileVersion("1.8.1.0")]
 
 // NINA Plugin metadata
 [assembly: AssemblyMetadata("Homepage", "https://github.com/RegulusRemains/nina-dynamic-cooling")]
@@ -34,7 +34,7 @@ using System.Runtime.InteropServices;
 You set everything once on the Plugins ▸ Dynamic Cooling options page:
 
 Temperature source: read ambient from the weather device (with the focuser probe as a fallback), or from the focuser probe only.
-Camera cooling power: how far below ambient your camera can hold, for example 35°C.
+Camera cooling power: how far below ambient your camera can hold (default 30°C, what most cooled CMOS cameras sustain in the field).
 Cooling timeout: how long to wait for the camera to reach the target.
 Dark library temperatures: tick the sensor temperatures you keep dark frames for.
 
@@ -42,7 +42,8 @@ Add one Dynamic Cool Camera instruction to your sequence. It has no per-step set
 
 For the camera's anti-dew window heater, prefer your camera firmware's anti-dew cooler linkage (ZWO): the heater follows the TEC inside the camera itself, and the camera then revokes external heater control entirely. Without linkage, use NINA's own dew-heater camera setting with the native driver. Either way, leave the heater on whenever the sensor is cooled. Earlier versions shipped a Dew Heater Control trigger that switched the heater from the ambient-to-dew-point spread; 1.8.0 removed it because that models the wrong surface. The window fronts a chamber cooled far below ambient, so it can sit under the dew point while the ambient spread still looks safe, and on humid nights the trigger was permanently on anyway. Always-on while cooling is simpler and correct.
 
-Changelog 1.8.0: removed the Dew Heater Control trigger and its options; leave the heater on while cooling via NINA's camera settings instead.
+Changelog 1.8.1: camera cooling power now defaults to 30°C below ambient (was 35). Spec sheets promise 35; the field delivers about 30, and an unreachable default causes the very stall this plugin prevents.
+Changelog 1.8.0: removed the Dew Heater Control trigger and its options; leave the heater on while cooling via the camera firmware's anti-dew cooler linkage or NINA's camera settings instead.
 Changelog 1.7.1: the dew heater margin now defaults to 5°C, and the plugin description was rewritten.
 Changelog 1.7.0: added the Dew Heater Control trigger for automatic anti-dew heater management based on how close the ambient temperature is to the dew point.
 Changelog 1.6.0: simplified the options to temperature source, cooling power, cooling timeout, and the dark library grid. The enabled temperatures now define the cold limit.
