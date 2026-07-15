@@ -11,8 +11,8 @@ namespace NINA.Plugin.DynamicCooling {
     /// Central definition of the plugin's persisted settings: the keys, their
     /// defaults, and the fixed 5°C temperature grid. Both the plugin options page
     /// and the Dynamic Cool Camera instruction read/write through a
-    /// <see cref="PluginOptionsAccessor"/> built from these, so the instruction
-    /// always uses whatever is configured on the Plugins ▸ Dynamic Cooling page.
+    /// <see cref="PluginOptionsAccessor"/> built from these. The instruction uses
+    /// these values unless a supported per-step override is specified.
     /// Settings are stored per NINA profile.
     /// </summary>
     internal static class DynamicCoolingOptions {

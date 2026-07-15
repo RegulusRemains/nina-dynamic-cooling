@@ -13,7 +13,7 @@ namespace NINA.Plugin.DynamicCooling {
     /// Plugin manifest + settings store. All Dynamic Cooling configuration lives
     /// here (shown on the Plugins ▸ Dynamic Cooling options page) and is persisted
     /// per profile via <see cref="PluginOptionsAccessor"/>. The Dynamic Cool Camera
-    /// instruction reads these same settings, so it has no per-instruction options.
+    /// instruction reads these settings and may override the cooling time per step.
     /// </summary>
     [Export(typeof(IPluginManifest))]
     public class DynamicCoolingPlugin : PluginBase, INotifyPropertyChanged {
