@@ -18,8 +18,8 @@ using System.Runtime.InteropServices;
 // Unique plugin Identifier.
 [assembly: Guid("25ac9c96-885e-4733-a437-a5d4863a1c7e")]
 
-[assembly: AssemblyVersion("1.8.1.0")]
-[assembly: AssemblyFileVersion("1.8.1.0")]
+[assembly: AssemblyVersion("1.9.0.0")]
+[assembly: AssemblyFileVersion("1.9.0.0")]
 
 // NINA Plugin metadata
 [assembly: AssemblyMetadata("Homepage", "https://github.com/RegulusRemains/nina-dynamic-cooling")]

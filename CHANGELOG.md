@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.0.0
+- **The Dynamic Cool Camera instruction can now override the cooling time per sequence step.** A new optional **Cooling time** field (minutes) on the sequencer block overrides the plugin-wide cooling timeout for just that step; leave it empty to keep using the value from **Options → Plugins → Dynamic Cooling** (the configured default is shown in parentheses as a placeholder). The override round-trips through sequence JSON and cloning, and an empty or non-positive effective value is rejected so a step can't silently wait forever. All other configuration (temperature targeting, source, dark-library steps, TEC checks, fallbacks) still comes from the options page.
+
 ## 1.8.1.0
 - **Camera cooling power now defaults to 30 °C below ambient** (was 35 °C). Spec sheets quote 35 °C deltas, but in the field most cooled CMOS cameras sustain about 30 °C — an over-ambitious default makes a new user's first night chase an unreachable setpoint, which is exactly the stall this plugin exists to prevent. Existing profiles keep whatever value they have stored; the new default only applies where none was saved.
 
