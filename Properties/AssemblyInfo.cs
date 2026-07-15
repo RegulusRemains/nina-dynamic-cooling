@@ -1,5 +1,8 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+[assembly: InternalsVisibleTo("NINA.Plugin.DynamicCooling.Tests")]
 
 [assembly: AssemblyTitle("Dynamic Cooling")]
 [assembly: AssemblyDescription("Dynamic camera cooling based on ambient temperature")]
@@ -15,8 +18,8 @@ using System.Runtime.InteropServices;
 // Unique plugin Identifier.
 [assembly: Guid("25ac9c96-885e-4733-a437-a5d4863a1c7e")]
 
-[assembly: AssemblyVersion("1.8.1.0")]
-[assembly: AssemblyFileVersion("1.8.1.0")]
+[assembly: AssemblyVersion("1.9.0.0")]
+[assembly: AssemblyFileVersion("1.9.0.0")]
 
 // NINA Plugin metadata
 [assembly: AssemblyMetadata("Homepage", "https://github.com/RegulusRemains/nina-dynamic-cooling")]
@@ -38,7 +41,7 @@ Camera cooling power: how far below ambient your camera can hold (default 30°C,
 Cooling timeout: how long to wait for the camera to reach the target.
 Dark library temperatures: tick the sensor temperatures you keep dark frames for.
 
-Add one Dynamic Cool Camera instruction to your sequence. It has no per-step settings. It cools to the coldest ticked temperature the camera can reach for the current ambient, so every light frame matches a dark you already have. Put it at the start of the night for the first cool-down, and in After Each Target to step colder as the night cools. It will not warm the camera back up during a session, and it backs off if the cooler is already maxed out.
+Add one Dynamic Cool Camera instruction to your sequence. You can optionally override its cooling time in minutes; leave the field empty to use the plugin-wide cooling timeout. It cools to the coldest ticked temperature the camera can reach for the current ambient, so every light frame matches a dark you already have. Put it at the start of the night for the first cool-down, and in After Each Target to step colder as the night cools. It will not warm the camera back up during a session, and it backs off if the cooler is already maxed out.
 
 For the camera's anti-dew window heater, prefer your camera firmware's anti-dew cooler linkage (ZWO): the heater follows the TEC inside the camera itself, and the camera then revokes external heater control entirely. Without linkage, use NINA's own dew-heater camera setting with the native driver. Either way, leave the heater on whenever the sensor is cooled. Earlier versions shipped a Dew Heater Control trigger that switched the heater from the ambient-to-dew-point spread; 1.8.0 removed it because that models the wrong surface. The window fronts a chamber cooled far below ambient, so it can sit under the dew point while the ambient spread still looks safe, and on humid nights the trigger was permanently on anyway. Always-on while cooling is simpler and correct.
 

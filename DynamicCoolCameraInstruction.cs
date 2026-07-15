@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,6 +28,54 @@ namespace NINA.Plugin.DynamicCooling {
         private readonly IWeatherDataMediator weatherDataMediator;
         private readonly IFocuserMediator focuserMediator;
         private readonly IProfileService profileService;
+        private int? coolingDurationMinutes;
+
+        /// <summary>
+        /// Optional timeout for this sequencer item, in minutes. A null value uses
+        /// the timeout configured on the plugin options page.
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public int? CoolingDurationMinutes {
+            get => coolingDurationMinutes;
+            set {
+                if (coolingDurationMinutes == value) { return; }
+                coolingDurationMinutes = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(CoolingDurationMinutesText));
+            }
+        }
+
+        /// <summary>
+        /// String adapter used by WPF so clearing the TextBox maps cleanly to null.
+        /// Direct nullable-number binding treats an empty string as a conversion error.
+        /// </summary>
+        [JsonIgnore]
+        public string CoolingDurationMinutesText {
+            get => CoolingDurationMinutes?.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
+            set {
+                if (string.IsNullOrWhiteSpace(value)) {
+                    CoolingDurationMinutes = null;
+                    return;
+                }
+                if (int.TryParse(value, NumberStyles.Integer, CultureInfo.CurrentCulture, out int parsed)) {
+                    CoolingDurationMinutes = parsed;
+                    return;
+                }
+                throw new FormatException("Cooling time must be a whole number of minutes");
+            }
+        }
+
+        [JsonIgnore]
+        public string DefaultCoolingDurationText {
+            get {
+                int configured = profileService == null
+                    ? DynamicCoolingOptions.DefTimeout
+                    : DynamicCoolingOptions.CreateAccessor(profileService).GetValueInt32(
+                        DynamicCoolingOptions.KeyTimeout,
+                        DynamicCoolingOptions.DefTimeout);
+                return $"({configured})";
+            }
+        }
 
         [ImportingConstructor]
         public DynamicCoolCameraInstruction(ICameraMediator cameraMediator, IWeatherDataMediator weatherDataMediator, IFocuserMediator focuserMediator, IProfileService profileService) {
@@ -63,7 +112,9 @@ namespace NINA.Plugin.DynamicCooling {
         }
 
         public override object Clone() {
-            return new DynamicCoolCameraInstruction(cameraMediator, weatherDataMediator, focuserMediator, profileService);
+            return new DynamicCoolCameraInstruction(cameraMediator, weatherDataMediator, focuserMediator, profileService) {
+                CoolingDurationMinutes = CoolingDurationMinutes
+            };
         }
 
         public override async Task Execute(IProgress<ApplicationStatus> progress, CancellationToken token) {
@@ -76,7 +127,8 @@ namespace NINA.Plugin.DynamicCooling {
             var s = DynamicCoolingOptions.CreateAccessor(profileService);
             int source = s.GetValueInt32(DynamicCoolingOptions.KeySource, DynamicCoolingOptions.DefSource);
             double maxDelta = s.GetValueDouble(DynamicCoolingOptions.KeyMaxDelta, DynamicCoolingOptions.DefMaxDelta);
-            int timeoutMin = s.GetValueInt32(DynamicCoolingOptions.KeyTimeout, DynamicCoolingOptions.DefTimeout);
+            int configuredTimeoutMin = s.GetValueInt32(DynamicCoolingOptions.KeyTimeout, DynamicCoolingOptions.DefTimeout);
+            int timeoutMin = ResolveCoolingDurationMinutes(CoolingDurationMinutes, configuredTimeoutMin);
             double[] steps = DynamicCoolingOptions.GetAllowedSet(s);  // enabled dark-library temps (empty → 5°C grid)
 
             double ambient = GetAmbientTemperature(source);
@@ -114,6 +166,14 @@ namespace NINA.Plugin.DynamicCooling {
             } else {
                 await ExecuteReadjust(calculatedTarget, info, ambient, steps, timeoutMin, progress, token);
             }
+        }
+
+        internal static int ResolveCoolingDurationMinutes(int? sequenceValue, int configuredValue) {
+            int resolved = sequenceValue ?? configuredValue;
+            if (resolved <= 0) {
+                throw new SequenceEntityFailedException("Dynamic Cooling: cooling time must be greater than 0 minutes");
+            }
+            return resolved;
         }
 
         // Full ramped cool-down from warm/off, with warm-night fallback to a sustainable step.

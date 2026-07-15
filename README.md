@@ -2,7 +2,7 @@
 
 Dynamic camera cooling for [N.I.N.A.](https://nighttime-imaging.eu/) (Nighttime Imaging 'N' Astronomy). Instead of a fixed cooling setpoint, Dynamic Cooling sets the target from the ambient temperature each night and snaps it to a temperature you actually keep dark frames for. Your lights always match a dark library, and the sequence does not stall because the cooler cannot reach an over-ambitious setpoint.
 
-It adds an Advanced Sequencer instruction, **Dynamic Cool Camera**. Place it at the start of a night for a full cool-down, and in **After Each Target** to keep stepping colder as the night cools; it adjusts what it does based on where you place it. All configuration lives on the plugin's options page, so the sequencer item itself needs no setup.
+It adds an Advanced Sequencer instruction, **Dynamic Cool Camera**. Place it at the start of a night for a full cool-down, and in **After Each Target** to keep stepping colder as the night cools; it adjusts what it does based on where you place it. The sequencer item can override the cooling time for an individual step, while its other configuration comes from the plugin's options page.
 
 ![Dynamic Cooling options page](assets/options.jpg)
 
@@ -19,7 +19,7 @@ Open **Options → Plugins → Dynamic Cooling** and set these once (they apply 
 
 ## How it works
 
-**Dynamic Cool Camera** lives under the **Dynamic Cooling** category in the Advanced Sequencer's instruction list. Place it wherever you want cooling managed:
+**Dynamic Cool Camera** lives under the **Dynamic Cooling** category in the Advanced Sequencer's instruction list. Its optional **Cooling time** field overrides the plugin-wide cooling timeout for that sequence step, in minutes; leave it empty to use the value from **Options → Plugins → Dynamic Cooling**. Place it wherever you want cooling managed:
 
 - **Start of a night** (cooler off, or the sensor is still well above target) → full cool-down. It reads ambient, computes `ambient − cooling power`, and snaps to the **coldest enabled dark-library temperature the camera can actually reach** (rounding toward warmer so the target is achievable). If the TEC still can't hold it on a warm night, it steps back to a sustainable enabled temperature so the sequence proceeds instead of hanging.
 - **After Each Target** (cooler already on and cold) → it re-reads ambient and steps the camera **colder** as the night cools, moving between enabled temperatures only. It never warms the camera back up mid-session, and it backs off when the TEC is already straining (> 90 % power).
