@@ -1,12 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!--
-    Unit tests for the Dynamic Cooling plugin.
-    Requires the NINA reference assemblies in ..\refs (same as the main project; see the
-    plugin dev guide). The full runtime assemblies are copied next to the test output so
-    the tests can execute against real NINA types (CameraInfo, PluginSettings, etc.).
-    Run from a NINA-equipped Windows machine:  dotnet test Tests
-  -->
+  <!-- Unit tests for the Dynamic Cooling plugin against the pinned NINA package graph. -->
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
@@ -15,6 +9,7 @@
     <Nullable>disable</Nullable>
     <IsPackable>false</IsPackable>
     <RootNamespace>NINA.Plugin.DynamicCooling.Tests</RootNamespace>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,24 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NINA.Plugin.DynamicCooling.csproj" />
-  </ItemGroup>
-
-  <!-- Compile-time references to NINA types used by the tests -->
-  <ItemGroup>
-    <Reference Include="NINA.Core"><HintPath>..\..\refs\NINA.Core.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="NINA.Equipment"><HintPath>..\..\refs\NINA.Equipment.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="NINA.Profile"><HintPath>..\..\refs\NINA.Profile.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="NINA.Sequencer"><HintPath>..\..\refs\NINA.Sequencer.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="CommunityToolkit.Mvvm"><HintPath>..\..\refs\CommunityToolkit.Mvvm.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="Newtonsoft.Json"><HintPath>..\..\refs\Newtonsoft.Json.dll</HintPath><Private>false</Private></Reference>
-  </ItemGroup>
-
-  <!-- Copy all NINA runtime assemblies (incl. transitive deps) next to the test for execution -->
-  <ItemGroup>
-    <None Include="..\..\refs\*.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>%(Filename)%(Extension)</Link>
-    </None>
   </ItemGroup>
 
 </Project>
