@@ -54,13 +54,18 @@ No compiling required. A prebuilt DLL is provided with every release.
 
 ## Building
 
-Requires the .NET 8 SDK (with the Windows Desktop workload). Place the N.I.N.A. reference assemblies in a sibling `..\refs\` folder (copy them from your N.I.N.A. install directory), then:
+Requires the .NET 8 SDK (with the Windows Desktop workload). Dependencies are pinned in `packages.lock.json`; restore and build with:
 
 ```
+dotnet restore --locked-mode
 dotnet build -c Release -p:Platform=x64
 ```
 
 Output: `bin\x64\Release\NINA.Plugin.DynamicCooling.dll`.
+
+The same locked build and test run executes in GitHub Actions. See
+[`RELEASING.md`](RELEASING.md) for the version gate, artifact provenance, and publication
+procedure.
 
 ## License
 
@@ -69,9 +74,9 @@ Output: `bin\x64\Release\NINA.Plugin.DynamicCooling.dll`.
 ## Tests
 
 Unit tests for the sequencer logic live in `Tests/` (NUnit + Moq). They run against the
-real NINA assemblies supplied in `..\refs` (the same set the plugin builds against), on a
-Windows machine with the .NET 8 SDK:
+same pinned NINA package graph as the plugin on a Windows machine with the .NET 8 SDK:
 
 ```
-dotnet test Tests
+dotnet restore Tests/NINA.Plugin.DynamicCooling.Tests.csproj --locked-mode
+dotnet test Tests/NINA.Plugin.DynamicCooling.Tests.csproj -c Release -p:Platform=x64 --no-restore
 ```

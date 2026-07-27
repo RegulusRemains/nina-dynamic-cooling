@@ -1,0 +1,70 @@
+name: Build and test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore pinned dependencies
+        run: dotnet restore Tests/NINA.Plugin.DynamicCooling.Tests.csproj --locked-mode -p:Platform=x64
+
+      - name: Run regression tests
+        run: dotnet test Tests/NINA.Plugin.DynamicCooling.Tests.csproj --configuration Release -p:Platform=x64 --no-restore
+
+      - name: Build plugin
+        run: dotnet build NINA.Plugin.DynamicCooling.csproj --configuration Release -p:Platform=x64 --no-restore
+
+      - name: Require tag and assembly versions to match
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          $assemblyInfo = Get-Content Properties/AssemblyInfo.cs -Raw
+          if ($assemblyInfo -notmatch 'AssemblyVersion\("([^"]+)"\)') {
+            throw "Properties/AssemblyInfo.cs does not declare AssemblyVersion."
+          }
+
+          $assemblyVersion = $Matches[1]
+          $tagVersion = "${{ github.ref_name }}".Substring(1)
+          if ($tagVersion -ne $assemblyVersion) {
+            throw "Tag version $tagVersion does not match AssemblyVersion $assemblyVersion."
+          }
+
+      - name: Stage tag artifact and checksum
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          $artifact = "bin/x64/Release/NINA.Plugin.DynamicCooling.dll"
+          if (-not (Test-Path -LiteralPath $artifact)) {
+            throw "Expected release artifact not found: $artifact"
+          }
+
+          New-Item -ItemType Directory -Path release-evidence | Out-Null
+          Copy-Item -LiteralPath $artifact -Destination release-evidence/
+          $hash = (Get-FileHash -LiteralPath $artifact -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  NINA.Plugin.DynamicCooling.dll" |
+            Set-Content -LiteralPath release-evidence/NINA.Plugin.DynamicCooling.dll.sha256
+
+      - name: Upload tag artifact evidence
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: NINA.Plugin.DynamicCooling-${{ github.ref_name }}
+          path: release-evidence/
+          if-no-files-found: error
